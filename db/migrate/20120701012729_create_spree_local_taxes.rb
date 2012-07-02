@@ -4,7 +4,7 @@ class CreateSpreeLocalTaxes < ActiveRecord::Migration
       t.string :zip
       t.string :county
       t.float :rate
-      t.reference :state
+      t.references :state
     end
   end
 end

@@ -1,7 +1,7 @@
 SpreeLocalTax
 =============
 
-Introduction goes here.
+Local tax calculation (i.e. state based for US tax requirements) for Spree Commerce. Will include the ability to include/exclude shipping, promotions, etc from tax calculation. 
 
 
 Example

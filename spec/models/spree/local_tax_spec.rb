@@ -1,5 +1,11 @@
 require 'spec_helper'
 
 describe Spree::LocalTax do
-  pending "add some examples to (or delete) #{__FILE__}"
+  context "sql backend" do
+
+  end
+
+  context "tax cloud backend" do
+    
+  end
 end

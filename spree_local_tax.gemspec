@@ -3,13 +3,14 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_local_tax'
   s.version     = '1.1.1'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.summary     = 'Local tax calculation for Spree Commerce'
+  s.description = 'Local tax calculation (i.e. state based for US tax requirements) for Spree Commerce.' +
+                  'ability to include/exclude shipping, promotions, etc from tax calculation'
   s.required_ruby_version = '>= 1.8.7'
 
-  # s.author    = 'You'
-  # s.email     = 'you@example.com'
-  # s.homepage  = 'http://www.spreecommerce.com'
+  s.author    = 'Michael Bianco'
+  s.email     = 'info@cliffsidedev.com'
+  s.homepage  = 'http://mabblog.com/'
 
   #s.files       = `git ls-files`.split("\n")
   #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
