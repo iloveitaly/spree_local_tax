@@ -3,7 +3,7 @@ class CreateSpreeLocalTaxes < ActiveRecord::Migration
     create_table :spree_local_taxes do |t|
       t.string :zip
       t.string :county
-      t.float :rate
+      t.float :rate, :default => 0
       t.references :state
     end
   end
