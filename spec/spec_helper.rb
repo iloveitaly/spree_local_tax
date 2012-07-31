@@ -14,6 +14,8 @@ Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 require 'spree/core/testing_support/factories'
 require 'spree/core/url_helpers'
 
+Dir[File.join(File.dirname(__FILE__), "factories/*.rb")].each {|f| require f }
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
 
