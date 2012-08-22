@@ -53,8 +53,6 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
             tax_locations[local_tax.city]["state_tax"] += state_tax * taxable_amount
             tax_locations[local_tax.city]["county_tax_amount"] += local_tax.local * taxable_amount
             tax_locations[local_tax.city]["other"] += local_tax.other * taxable_amount
-
-            Rails.logger.info "DIFFERENCE #{calculator.compute(order)} : #{tax_rate.amount}"
           end
         end
       end
@@ -80,7 +78,7 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
     ruportdata.rename_column("taxable_amount", "Taxable Amount")
     ruportdata.rename_column("tax_total", "Tax Total")
     ruportdata.rename_column("state_tax", "State Tax")
-    ruportdata.rename_column("county_tax_amount", "County Tax Amount")
-    ruportdata.rename_column("other", "Other")
+    ruportdata.rename_column("county_tax_amount", "County Tax")
+    ruportdata.rename_column("other", "Stadium Tax & Other")
   end
 end
