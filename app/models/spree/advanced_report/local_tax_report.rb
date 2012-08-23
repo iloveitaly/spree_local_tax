@@ -17,11 +17,21 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
     # TODO use date slash format instead of dashes
     self.ruportdata = Ruport::Data::Group.new({
       :name => "#{self.name} #{self.date_range}",
-      :column_names => %w[county total_tax taxable_amount tax_total state_tax county_tax_amount other]
+      :column_names => %w[
+        state
+        county
+        total_tax
+        taxable_amount
+        tax_total
+        state_tax
+        county_tax_amount
+        other
+      ]
     })
 
     # TODO this should be rearranged to handle states + counties, not just counties
-    tax_locations = {}
+    city_locations = {}
+    state_locations = {}
 
     orders.each do |order|
       next if order.adjustments.eligible.tax.blank?
@@ -33,9 +43,13 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
 
         if calculator.class == Spree::Calculator::LocalTax
           local_tax = calculator.find_local_tax(order.bill_address)
+          taxable_amount = calculator.taxable_amount(order)
+          tax_total = calculator.compute(order)
 
           if local_tax.present?
-            tax_locations[local_tax.city] ||= {
+            city_locations[local_tax.state.abbr] ||= {}
+            city_locations[local_tax.state.abbr][local_tax.city] ||= {
+              "state" => local_tax.state.abbr,
               "county" => local_tax.city,
               "total_tax" => number_to_percentage(local_tax.rate * 100.0, precision: 2, strip_insignificant_zeros: true),
               "tax_total" => 0.0,
@@ -45,20 +59,40 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
               "other" => 0
             }
 
-            taxable_amount = calculator.taxable_amount(order)
             state_tax = local_tax.state.tax
 
-            tax_locations[local_tax.city]["tax_total"] += calculator.compute(order)
-            tax_locations[local_tax.city]["taxable_amount"] += taxable_amount
-            tax_locations[local_tax.city]["state_tax"] += state_tax * taxable_amount
-            tax_locations[local_tax.city]["county_tax_amount"] += local_tax.local * taxable_amount
-            tax_locations[local_tax.city]["other"] += local_tax.other * taxable_amount
+            # TODO messy, there has to be a more ruby way to handle this
+            city_locations[local_tax.state.abbr][local_tax.city]["tax_total"] += tax_total
+            city_locations[local_tax.state.abbr][local_tax.city]["taxable_amount"] += taxable_amount
+            city_locations[local_tax.state.abbr][local_tax.city]["state_tax"] += state_tax * taxable_amount
+            city_locations[local_tax.state.abbr][local_tax.city]["county_tax_amount"] += local_tax.local * taxable_amount
+            city_locations[local_tax.state.abbr][local_tax.city]["other"] += local_tax.other * taxable_amount
+          else
+            # if not local tax object is available, fall back to state tax calculation
+            # NOTE this will break for international orders (Order#state_text should be used instead)
+
+            state_text = order.bill_address.state.abbr
+
+            state_locations[state_text] ||= {
+              "state" => order.bill_address.state.abbr,
+              "county" => "",
+              "total_tax" => number_to_percentage(calculator.calculable.amount * 100.0, precision: 2, strip_insignificant_zeros: true),
+              "tax_total" => 0.0,
+              "taxable_amount" => 0,
+              "state_tax" => 0,
+              "county_tax_amount" => 0,
+              "other" => 0
+            }
+            Rails.logger.info "THE TAX #{state_locations[state_text].inspect}"
+            state_locations[state_text]["tax_total"] += tax_total
+            state_locations[state_text]["state_tax"] += tax_total # its all state tax
+            state_locations[state_text]["taxable_amount"] += taxable_amount
           end
         end
       end
     end
 
-    tax_locations.values.each do |data|
+    (city_locations.values.map(&:values).flatten + state_locations.values).each do |data|
       # format numbers
       data["taxable_amount"] = number_to_currency(data["taxable_amount"])
       data["tax_total"] = number_to_currency(data["tax_total"])

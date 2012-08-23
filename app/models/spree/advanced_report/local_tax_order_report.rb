@@ -7,7 +7,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
   end
 
   def description
-    "Local Tax Report by Order "
+    "Local Tax Report by Order"
   end
 
   def initialize(params)
@@ -21,6 +21,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
         order
         firstname
         lastname
+        state
         county
         total_tax
         taxable_amount
@@ -64,6 +65,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
 
         if local_tax
           tax_data.merge!({
+            "state" => local_tax.state.abbr,
             "county" => local_tax.city,
             "total_tax" => number_to_percentage(local_tax.rate * 100.0, precision: 2, strip_insignificant_zeros: true),
             "tax_total" => number_to_currency(calculator.compute(order)),
@@ -74,6 +76,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
         else
           # no specific tax available, fallback to state based taxes
           tax_data.merge!({
+            "state" => order.bill_address.state.abbr,
             "state_tax" => number_to_currency(calculator.compute(order)),
             "total_tax" => number_to_percentage(calculator.calculable.amount * 100.0, precision: 2, strip_insignificant_zeros: true)
           })
@@ -88,6 +91,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
     # rename the columns (ruport doesn't allow spaces in names)
     ruportdata.rename_column("order", "Order")
     ruportdata.rename_column("county", "County")
+    ruportdata.rename_column("state", "State")
     ruportdata.rename_column("shipping_total", "Shipping Total")
     ruportdata.rename_column("county", "County")
     ruportdata.rename_column("firstname", "First Name")

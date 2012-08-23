@@ -8,8 +8,8 @@ Spree::Admin::ReportsController.class_eval do
         description: 'Local taxation report by city'
       },
       :orders_local_tax => {
-        name: 'Local Tax by Orders',
-        description: 'Location taxation report by order'
+        name: 'Local Tax by Order',
+        description: 'Local taxation report by order'
       }
     })
   )
