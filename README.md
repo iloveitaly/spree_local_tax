@@ -1,20 +1,24 @@
 SpreeLocalTax
 =============
 
-Local tax calculation (i.e. state based for US tax requirements) for Spree Commerce. Will include the ability to include/exclude shipping, promotions, etc from tax calculation. 
+Local tax calculation (i.e. state based for US tax requirements) for Spree Commerce.
+Will include the ability to include/exclude shipping, promotions, etc from tax calculation. 
 
 Design goals:  
 
 * Inherit from DefaultTax
-* Allow for matching by city + state or zip
+* Taxable amount is calculated as: item total + shipping - promotional adjustments.
+  This can be [easily adjusted](https://github.com/iloveitaly/spree_local_tax/blob/master/app/models/spree/calculator/local_tax.rb#L33).
+* Allow for matching by city + state or zip code
 * No modifications to existing tax calculation logic: all logic contained within new calculator
-* Downloadable reports
-* Swappable tax calculation backends
+* Downloadable reports via [spree_advanced_reporting](http://github.com/iloveitaly/spree_advanced_reporting): tax by city, tax by order
+* Swappable tax calculation backends. Right now only SQL is supported,
+  possibly support [avalara](http://www.avalara.com/products/sdk) or [taxcloud](https://taxcloud.net/default.aspx) in the future
 
 Example
 =======
 
-A new tax calculator will be available under Configuration --> Tax Rates
+After installation, a new tax calculator will be available under Configuration --> Tax Rates.
 
 TODO
 ====
