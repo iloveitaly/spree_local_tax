@@ -11,6 +11,17 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
   end
 
   def initialize(params)
+    params[:advanced_reporting] ||= {}
+
+    # default to report on shipped orders only
+    params[:advanced_reporting][:order_type] = 'shipped' if params[:advanced_reporting][:order_type].blank?
+
+    # default to exclude orders that are not fully shipped
+    params[:advanced_reporting][:shipment] = 'fully_shipped' if params[:advanced_reporting][:shipment].blank?
+
+    # use taxable address as state filter
+    params[:advanced_reporting][:state_based_on_taxable_address] == '1' if params[:advanced_reporting][:state_based_on_taxable_address].blank?
+
     super(params)
 
     # group is a subclass of table
@@ -42,7 +53,8 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
         calculator = tax_rate.originator.calculator
 
         if calculator.class == Spree::Calculator::LocalTax
-          local_tax = calculator.find_local_tax(order.bill_address)
+          tax_address = Spree::Config[:tax_using_ship_address] ? order.ship_address : order.bill_address
+          local_tax = calculator.find_local_tax(tax_address)
           taxable_amount = calculator.taxable_amount(order)
           tax_total = calculator.compute(order)
 
@@ -71,10 +83,12 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
             # if not local tax object is available, fall back to state tax calculation
             # NOTE this will break for international orders (Order#state_text should be used instead)
 
-            state_text = order.bill_address.state.abbr
+            state_text = tax_address.state.abbr
+
+            Rails.logger.error "Missing zip code for local tax calculation: #{tax_address.zipcode}"
 
             state_locations[state_text] ||= {
-              "state" => order.bill_address.state.abbr,
+              "state" => tax_address.state.abbr,
               "county" => "",
               "total_tax" => number_to_percentage(calculator.calculable.amount * 100.0, precision: 2, strip_insignificant_zeros: true),
               "tax_total" => 0.0,
@@ -83,7 +97,7 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
               "county_tax_amount" => 0,
               "other" => 0
             }
-            Rails.logger.info "THE TAX #{state_locations[state_text].inspect}"
+
             state_locations[state_text]["tax_total"] += tax_total
             state_locations[state_text]["state_tax"] += tax_total # its all state tax
             state_locations[state_text]["taxable_amount"] += taxable_amount

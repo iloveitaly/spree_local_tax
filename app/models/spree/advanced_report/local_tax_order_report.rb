@@ -11,6 +11,17 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
   end
 
   def initialize(params)
+    params[:advanced_reporting] ||= {}
+
+    # default to report on shipped orders only
+    params[:advanced_reporting][:order_type] = 'shipped' if params[:advanced_reporting][:order_type].blank?
+
+    # default to exclude orders that are not fully shipped
+    params[:advanced_reporting][:shipment] = 'fully_shipped' if params[:advanced_reporting][:shipment].blank?
+
+    # use taxable address as state filter
+    params[:advanced_reporting][:state_based_on_taxable_address] == '1' if params[:advanced_reporting][:state_based_on_taxable_address].blank?
+
     super(params)
 
     # group is a subclass of table
@@ -41,11 +52,12 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
 
       tax_adjustment = order.adjustments.eligible.tax.first
       calculator = tax_adjustment.originator.calculator
+      tax_address = Spree::Config[:tax_using_ship_address] ? order.ship_address : order.bill_address
 
       tax_data = {
         "order" => link_to(order.number, Spree::Core::Engine.routes.url_helpers.admin_order_path(order), target: '_blank'),
-        "firstname" => order.bill_address.firstname,
-        "lastname" => order.bill_address.lastname,
+        "firstname" => tax_address.firstname,
+        "lastname" => tax_address.lastname,
         "total_tax" => 0,
         "taxable_amount" => 0,
         "shipping_total" => number_to_currency(order.adjustments.shipping.sum(&:amount)),
@@ -56,7 +68,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
       }
 
       if calculator.class == Spree::Calculator::LocalTax
-        local_tax = calculator.find_local_tax(order.bill_address)
+        local_tax = calculator.find_local_tax(tax_address)
         taxable_amount = calculator.taxable_amount(order)
 
         tax_data.merge!({
@@ -76,7 +88,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
         else
           # no specific tax available, fallback to state based taxes
           tax_data.merge!({
-            "state" => order.bill_address.state.abbr,
+            "state" => tax_address.state.abbr,
             "state_tax" => number_to_currency(calculator.compute(order)),
             "total_tax" => number_to_percentage(calculator.calculable.amount * 100.0, precision: 2, strip_insignificant_zeros: true)
           })
