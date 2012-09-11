@@ -20,7 +20,7 @@ class Spree::AdvancedReport::LocalTaxOrderReport < Spree::AdvancedReport
     params[:advanced_reporting][:shipment] = 'fully_shipped' if params[:advanced_reporting][:shipment].blank?
 
     # use taxable address as state filter
-    params[:advanced_reporting][:state_based_on_taxable_address] == '1' if params[:advanced_reporting][:state_based_on_taxable_address].blank?
+    params[:advanced_reporting][:state_based_on_taxable_address] = '1' if params[:advanced_reporting][:state_based_on_taxable_address].blank?
 
     super(params)
 
