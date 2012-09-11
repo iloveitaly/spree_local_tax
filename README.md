@@ -1,8 +1,7 @@
 SpreeLocalTax
 =============
 
-Local tax calculation (i.e. state based for US tax requirements) for Spree Commerce.
-Will include the ability to include/exclude shipping, promotions, etc from tax calculation. 
+Local tax calculation (i.e. state based for US taxation) for Spree Commerce.
 
 Design goals:  
 
@@ -11,28 +10,22 @@ Design goals:
   This can be [easily adjusted](https://github.com/iloveitaly/spree_local_tax/blob/master/app/models/spree/calculator/local_tax.rb#L33).
 * Allow for matching by city + state or zip code
 * No modifications to existing tax calculation logic: all logic contained within new calculator
-* Downloadable reports via [spree_advanced_reporting](http://github.com/iloveitaly/spree_advanced_reporting): tax by city, tax by order
+* Downloadable reports via [spree_advanced_reporting](http://github.com/iloveitaly/spree_advanced_reporting): tax by city, tax by order. These reports default to report by order shipped date and include only fully shipped orders. Tax reports respect `Spree::Config[:tax_using_ship_address]`
 * Swappable tax calculation backends. Right now only SQL is supported,
   possibly support [avalara](http://www.avalara.com/products/sdk), [taxcloud](https://taxcloud.net/default.aspx), or [TDS](http://www.taxdatasystems.com) in the future
 
 Example
 =======
 
-After installation, a new tax calculator will be available under Configuration --> Tax Rates.
+Run `bundle exec rails g spree_local_tax:install` to add & run the DB migration for SQL based local tax calculation (currently the only supported method).  
+
+After installation, a new tax calculator will be available under Configuration --> Tax Rates.  
 
 TODO
 ====
 
 * Support for taxcloud or other tax API
 * Right now the extension requires that you have `spree_advanced_reporting` installed, this requirement should be removed.
-
-Testing
--------
-
-Be sure to bundle your dependencies and then create a dummy test app for the specs to run against.
-
-    $ bundle
-    $ bundle exec rake test_app
-    $ bundle exec rspec spec
+* The code that monkeypatches the `Spree::ReportsController` is pretty messy right now. Unfortunately there is not an easy way to clean this up without improvements to the class itself. There is an [issue open](https://github.com/spree/spree/issues/1863) describing this problem.
 
 Copyright (c) 2012 Michael Bianco (@iloveitaly), released under the New BSD License

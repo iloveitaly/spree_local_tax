@@ -1,5 +1,7 @@
 require_dependency 'spree/admin/reports_controller'
 
+# UPGRADE_CHECK https://github.com/spree/spree/issues/1863
+
 Spree::Admin::ReportsController.class_eval do
   (AVAILABLE_REPORTS ||= {}).merge!(
     (ADVANCED_REPORTS ||= {}).merge!({
