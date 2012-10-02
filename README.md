@@ -12,7 +12,7 @@ Design goals:
 * No modifications to existing tax calculation logic: all logic contained within new calculator
 * Downloadable reports via [spree_advanced_reporting](http://github.com/iloveitaly/spree_advanced_reporting): tax by city, tax by order. These reports default to report by order shipped date and include only fully shipped orders. Tax reports respect `Spree::Config[:tax_using_ship_address]`
 * Swappable tax calculation backends. Right now only SQL is supported,
-  possibly support [avalara](http://www.avalara.com/products/sdk), [taxcloud](https://taxcloud.net/default.aspx), or [TDS](http://www.taxdatasystems.com) in the future
+  possibly support [avalara](http://www.avalara.com/products/sdk), [taxcloud](https://taxcloud.net/default.aspx), [SpeedTax](http://www.speedtax.com/), or [TDS](http://www.taxdatasystems.com) in the future
 
 Example
 =======
