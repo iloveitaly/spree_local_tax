@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 1.1.1'
+  s.add_dependency 'spree_core', '~> 1.1'
 
   # this is for the local tax reports
   # you can rip out the reporting and safely remove this dependency in a fork
