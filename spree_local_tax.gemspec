@@ -16,8 +16,17 @@ Gem::Specification.new do |s|
   s.requirements << 'none'
 
   s.add_dependency 'spree_core', '~> 1.1'
+  s.add_dependency 'ruport'
+  s.add_dependency 'spree_advanced_reporting'
 
   # this is for the local tax reports
   # you can rip out the reporting and safely remove this dependency in a fork
-  s.add_dependency 'spree_advanced_reporting'
+  # s.add_dependency 'spree_advanced_reporting'
+
+  s.add_development_dependency 'rspec-rails', '~> 2.9'
+  s.add_development_dependency 'factory_girl', '~> 2.6.4'
+  s.add_development_dependency 'capybara'
+  s.add_development_dependency 'sqlite3'
+  s.add_development_dependency 'shoulda-matchers'
+  s.add_development_dependency 'ffaker'
 end

@@ -8,15 +8,14 @@ describe Spree::LocalTax do
     tax_category.save!
 
     @tax_calculator = tax_category.tax_rates.first.calculator
+    @address = FactoryGirl.create :address
 
     # the totals are not automatically calculated
     # for line items to be picked up you have to reload
-    @order = FactoryGirl.create :order_with_totals
+    @order = FactoryGirl.create :order_with_totals, :bill_address => @address, :ship_address => @address
     @order.reload
     @order.update!
-
-    @address = FactoryGirl.create :address
-    @order.bill_address = @order.ship_address = @address
+    @order.save!
   end
 
   let(:order) { @order }
@@ -27,7 +26,7 @@ describe Spree::LocalTax do
     it "should change local tax amount based on zip code" do
       # 0.05 is default tax rate
       tax_amount = tax_calculator.compute(order)
-      order.item_total.should_not == 0
+      order.item_total.to_f.should_not == 0.0
       tax_amount.should == order.item_total * 0.05
 
       # without zip
@@ -51,13 +50,13 @@ describe Spree::LocalTax do
       calculator = tax_calculator
 
       # without promotion or shipping
-      calculator.taxable_amount(order).should == order.item_total
+      calculator.taxable_amount(order).should == order.item_total.to_f
 
       # without promotion
       order.shipping_method = FactoryGirl.create :shipping_method
       order.create_shipment!
       order.adjustments.shipping.count.should == 1
-      order.item_total.should_not == 0.0
+      order.item_total.to_f.should_not == 0.0
       calculator.taxable_amount(order).to_f.should == (order.item_total + order.ship_total).to_f
 
       # with everything

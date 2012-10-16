@@ -1,20 +1,16 @@
 source 'http://rubygems.org'
+gemspec
 
 group :test do
-  gem 'ffaker'
-  gem 'shoulda-matchers'
-  gem 'guard-rspec'
-  gem 'rspec-rails', '~> 2.9'
-  gem 'factory_girl', '~> 2.6.4'
-  gem 'capybara', '1.0.1'
-  gem 'sqlite3'
-  
   if RUBY_PLATFORM.downcase.include? "darwin"
+    gem 'guard-rspec'
     gem 'rb-fsevent'
     gem 'growl'
   end
 end
 
-gem 'spree', '~> 1.1.3'
+# specific to my dev setup
+gem 'ruport', :git => 'https://github.com/iloveitaly/ruport.git', :branch => 'wicked-pdf'
+gem 'spree_advanced_reporting', :git => 'https://github.com/iloveitaly/spree_advanced_reporting.git'
 
-gemspec
+gem 'spree', '~> 1.1.3'
