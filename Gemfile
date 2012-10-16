@@ -13,4 +13,4 @@ end
 gem 'ruport', :git => 'https://github.com/iloveitaly/ruport.git', :branch => 'wicked-pdf'
 gem 'spree_advanced_reporting', :git => 'https://github.com/iloveitaly/spree_advanced_reporting.git'
 
-gem 'spree', '~> 1.1.3'
+gem 'spree', '~> 1.2'
