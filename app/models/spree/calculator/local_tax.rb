@@ -21,8 +21,10 @@ module Spree
 
       # assumes SQL backend for now
 
+      # NOTE the zip code match is only based on the first five digits
+
       Spree::LocalTax.find_by_city_and_state_id(address.city.upcase, address.state.id) ||
-      Spree::LocalTax.find_by_zip(address.zipcode)
+      Spree::LocalTax.find_by_zip(address.zipcode[0,5])
     end
 
     def taxable_amount(order)

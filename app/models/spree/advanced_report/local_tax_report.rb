@@ -85,7 +85,7 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
 
             state_text = tax_address.state.abbr
 
-            Rails.logger.error "Missing zip code for local tax calculation: #{tax_address.zipcode}"
+            Rails.logger.error "Missing zipcode from #{state_text} for local tax: #{tax_address.zipcode}"
 
             state_locations[state_text] ||= {
               "state" => tax_address.state.abbr,
