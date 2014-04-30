@@ -129,4 +129,4 @@ class Spree::AdvancedReport::LocalTaxReport < Spree::AdvancedReport
     ruportdata.rename_column("county_tax_amount", "County Tax")
     ruportdata.rename_column("other", "Stadium Tax & Other")
   end
-end
+end if defined?(Spree::AdvancedReport)
