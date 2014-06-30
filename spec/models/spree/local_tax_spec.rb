@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Spree::LocalTax do
   before do
     # this has to be done first so the @order items are created with proper default associations
-    tax_category = FactoryGirl.create :tax_category_with_local_tax, :is_default => true
+    tax_category = FactoryGirl.create(:tax_category_with_local_tax, :is_default => true)
     tax_category.is_default = true
     tax_category.save!
 
@@ -60,7 +60,7 @@ describe Spree::LocalTax do
       calculator.taxable_amount(order).to_f.should == (order.item_total + order.ship_total).to_f
 
       # with everything
-      order.adjustments.create!({ :label => I18n.t(:promotion), :amount => 20.0 })
+      order.adjustments.create!({ :label => "A Promo", :originator_type => 'Spree::PromotionAction', :amount => 20.0 }, without_protection: true)
       order.adjustments.promotion.count.should == 1
       amt = order.item_total + order.ship_total + 20.0
       calculator.taxable_amount(order).should == amt
